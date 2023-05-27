@@ -1,0 +1,10 @@
+package indira_ukl;
+
+public class Main {
+    public static void main(String[] args) {
+        Masyarakat masyarakat = new Masyarakat();
+        Petugas petugas = new Petugas();
+        Barang barang = new Barang();
+        Lelang lelang = new Lelang(barang, masyarakat, petugas);
+    }
+}
