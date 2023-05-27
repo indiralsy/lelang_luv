@@ -1,0 +1,11 @@
+package indira_ukl;
+
+public interface User {
+    public void addNama(String n);
+    public String getNama(int id);
+    public void addAlamat(String n);
+    public String getAlamat(int id);
+    public void addTelepon(String n);
+    public String getTelepon(int id);
+    public int getJml();
+}
