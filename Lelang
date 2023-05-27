@@ -1,0 +1,162 @@
+
+package indira_ukl;
+
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class Lelang {
+    private ArrayList<Integer> idPenawar = new ArrayList<Integer>();
+    private ArrayList<Integer> idBarang = new ArrayList<Integer>();
+    private ArrayList<Integer> hargaTawar = new ArrayList<Integer>();
+
+    public Lelang(Barang barang, Masyarakat masyarakat, Petugas petugas) {
+        prosesLelang(barang, masyarakat, petugas);
+    }
+
+    public void prosesLelang(Barang barang, Masyarakat masyarakat, Petugas petugas) {
+        try {
+            Scanner sc = new Scanner(System.in);
+            String con = "";
+
+            while (!con.equalsIgnoreCase("yes")) {
+                System.out.print("======== Login ========\n1. Petugas\n2. Masyarakat\nLogin sebagai(1/2): ");
+                int loggedAs = sc.nextInt();
+
+                System.out.print("ID: ");
+                int id = sc.nextInt();
+
+                if (id > petugas.getJml() || id > masyarakat.getJml()) {
+                    System.out.println("ID yang anda masukkan tidak valid");
+                    break;
+                }
+
+                switch (loggedAs) {
+                    case 1:
+                        String logout = "";
+                        while (!logout.equalsIgnoreCase("y")) {
+                            System.out.print("===== Selamat Datang " + petugas.getNama(id) + " =====\n1. Tambah barang\n2. Edit Status Barang\n3. Delete Barang\n4. Tampilkan Tabel Barang\n5. Logout\nAksi: ");
+                            int act = sc.nextInt();
+
+                            switch (act) {
+                                case 1:
+                                    System.out.print("Nama Barang: ");
+                                    sc.nextLine();
+                                    String namaBarang = sc.nextLine();
+                                    System.out.print("Harga Barang: ");
+                                    int hargaBarang = sc.nextInt();
+                                    barang.addNewBarang(namaBarang, hargaBarang, true);
+                                    break;
+
+                                case 2:
+                                    System.out.print("ID Barang: ");
+                                    int idBarang = sc.nextInt();
+                                    ArrayList<Object> penawarTertinggi = getPenawarTertinggi(idBarang, masyarakat, barang.getHarga(idBarang));
+                                    System.out.print("Apakah anda yakin ingin mengganti status " + barang.getNama(idBarang) + "(y/n)? ");
+                                    String choice = sc.next();
+                                    if (!penawarTertinggi.get(1).equals(0)) {
+                                        barang.setStatus(idBarang, !choice.equalsIgnoreCase("y"));
+                                        System.out.println("Berhasil mengganti status barang");
+                                        System.out.println(barang.getNama(idBarang) + " telah dijual kepada " +
+                                                penawarTertinggi.get(1) + " dengan harga " + penawarTertinggi.get(0));
+                                        barang.deleteBarang(idBarang);
+                                    } else {
+                                        System.out.println("Belum ada penawar untuk " + barang.getNama(idBarang));
+                                    }
+                                    break;
+
+                                case 3:
+                                    System.out.print("ID Barang: ");
+                                    int idBarangDelete = sc.nextInt();
+                                    barang.deleteBarang(idBarangDelete);
+                                    System.out.println("Barang berhasil dihapus");
+                                    break;
+
+                                case 4:
+                                    barang.printTabelBarang();
+                                    break;
+
+                                case 5:
+                                    logout = "y";
+                                    break;
+
+                                default:
+                                    System.out.println("Input anda tidak valid");
+                            }
+
+                            System.out.print("Logout(y/n)? ");
+                            logout = sc.next();
+                        }
+                        break;
+
+                    case 2:
+                        logout = "";
+                        while (!logout.equalsIgnoreCase("y")) {
+                            barang.printTabelBarang();
+                            System.out.print("========= Selamat Datang " + masyarakat.getNama(id) + " =========" +
+                                    "\n1. Tawar Barang\n2. Logout\nAksi: ");
+                            int act = sc.nextInt();
+
+                            switch (act) {
+                                case 1:
+                                    System.out.println("Masukkan ID barang: ");
+                                    int idBarang = sc.nextInt();
+
+                                    ArrayList<Object> penawarTertinggi = getPenawarTertinggi(idBarang, masyarakat, barang.getHarga(idBarang));
+                                    System.out.print("===================" +
+                                            "\n" + barang.getNama(idBarang) + " seharga: " + barang.getHarga(idBarang) +
+                                            "\nTawaran tertinggi: " + penawarTertinggi.get(0) + " atas nama " + penawarTertinggi.get(1) +
+                                            "\nTawaran anda (harus lebih tinggi dari tawaran tertinggi): ");
+                                    int tawar = sc.nextInt();
+                                    addTransaksi(id, idBarang, tawar);
+                                    break;
+
+                                case 2:
+                                    logout = "y";
+                                    break;
+
+                                default:
+                                    System.out.println("Input anda tidak valid");
+                            }
+
+                            System.out.print("Logout(y/n)? ");
+                            logout = sc.next();
+                        }
+                        break;
+
+                    default:
+                        System.out.println("Input anda tidak valid");
+                }
+
+                System.out.print("Berhenti(yes/no)? ");
+                con = sc.next();
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Input Invalid");
+        }
+    }
+
+    private void addTransaksi(int idPenawar, int idBarang, int hargaTawar) {
+        this.idPenawar.add(idPenawar);
+        this.idBarang.add(idBarang);
+        this.hargaTawar.add(hargaTawar);
+    }
+
+    private ArrayList<Object> getPenawarTertinggi(int idBarang, Masyarakat masyarakat, int hargaBarang) {
+        int max = 0;
+        String nama = "(belum ada)";
+        ArrayList<Object> res = new ArrayList<>();
+        for (int i = 0; i < this.idBarang.size(); i++) {
+            if (this.idBarang.get(i) == idBarang) {
+                if (this.hargaTawar.get(i) > max && this.hargaTawar.get(i) > hargaBarang) {
+                    max = hargaTawar.get(i);
+                    nama = masyarakat.getNama(idPenawar.get(i));
+                }
+            }
+        }
+
+        res.add(max);
+        res.add(nama);
+        return res;
+    }
+}
