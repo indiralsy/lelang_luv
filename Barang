@@ -1,0 +1,66 @@
+
+package indira_ukl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class Barang {
+    public Barang() {
+        addNewBarang("Satelit", 10_000, true);
+        addNewBarang("Pulau", 5_000, true);
+    }
+
+    public String getNama(int id) {
+        return nama.get(id);
+    }
+
+    public void addNama(String n) {
+        nama.add(n);
+    }
+
+    public int getHarga(int id) {
+        return harga.get(id);
+    }
+
+    public void addHarga(int n) {
+        harga.add(n);
+    }
+
+    public boolean getStatus(int id) {
+        return status.get(id);
+    }
+
+    public void addStatus(boolean n) {
+        status.add(n);
+    }
+
+    public void setStatus(int id, boolean n) {
+        status.set(id, n);
+    }
+
+    public void addNewBarang(String nama, int harga, boolean status) {
+        addNama(nama);
+        addHarga(harga);
+        addStatus(status);
+    }
+
+    public void deleteBarang(int id) {
+        nama.remove(id);
+        harga.remove(id);
+        status.remove(id);
+    }
+
+    public void printTabelBarang() {
+        System.out.println("========================================");
+        System.out.println("Tabel Barang");
+        System.out.println("ID\t|\tNama\t|\tHarga\t|");
+        for (int i = 0; i < nama.size(); i++) {
+            System.out.println(i + "\t|\t" + nama.get(i) + "\t|\t" + harga.get(i));
+        }
+    }
+
+    private ArrayList<String> nama = new ArrayList<String>();
+    private ArrayList<Integer> harga = new ArrayList<Integer>();
+    private ArrayList<Boolean> status = new ArrayList<Boolean>();
+}
